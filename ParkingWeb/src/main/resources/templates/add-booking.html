@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Đặt chỗ đậu xe</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <h1 class="text-center text-primary mt-3">
+        <span th:text="${name}">Tên bãi</span>
+    </h1>
+
+    <div class="container">
+        <form th:action="@{/booking/add}" method="post" th:object="${booking}">
+
+            <!-- Chọn chỗ đậu -->
+            <div class="form-floating mb-3">
+                <select class="form-select" id="slot" th:field="*{slotId}" required>
+                    <option value="" disabled selected>-- Chọn chỗ đậu --</option>
+                    <option th:each="s : ${slots}"
+                            th:value="${s.slotId}"
+                            th:text="${s.slotCode} + ' - ' + ${s.status}"
+                            th:style="${s.status.toString() == 'available'} ? 'color: green;' : 'color: gray;'"
+                            th:disabled="${s.status.toString() != 'available'}">
+                    </option>
+                </select>
+                <label for="slot">Chọn chỗ đậu</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select" id="licensePlate" th:field="*{licensePlateId.id}" required>
+                    <option value="" disabled selected>-- Chọn biển số xe --</option>
+                    <option th:each="lp : ${plates}"
+                            th:value="${lp.id}"
+                            th:text="${lp.licensePlate}">
+                    </option>
+                </select>
+                <label for="licensePlate">Biển số xe</label>
+            </div>
+
+            <!-- Thời gian bắt đầu -->
+            <div class="form-floating mb-3">
+                <input type="datetime-local" class="form-control" id="startTime" th:field="*{startTime}" required>
+                <label for="startTime">Thời gian bắt đầu</label>
+            </div>
+
+            <!-- Thời gian kết thúc -->
+            <div class="form-floating mb-3">
+                <input type="datetime-local" class="form-control" id="endTime" th:field="*{endTime}" required>
+                <label for="endTime">Thời gian kết thúc</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select class="form-select" id="paymentMethod" th:field="*{payment.paymentMethod}" required>
+                    <option value="" disabled selected>-- Chọn phương thức thanh toán --</option>
+                    <option th:each="pm : ${paymentMethods}"
+                            th:value="${pm}"
+                            th:text="${pm}">
+                    </option>
+                </select>
+                <label for="paymentMethod">Phương thức thanh toán</label>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                Xác nhận đặt chỗ
+            </button>
+
+            <a th:href="@{/}" class="btn btn-secondary ms-2">Quay lại</a>
+        </form>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger text-center mb-3" th:text="${error}"></div>
+
+
+
+
+    <script th:src="@{/js/main.js}"></script>
+
+</body>
+</html>

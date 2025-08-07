@@ -1,0 +1,95 @@
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quản lý chỗ đậu xe</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <h1 class="text-center text-primary mt-2">Quản lý chỗ đậu xe</h1>
+
+    <div class="container">
+        <div class="mb-3">
+            <a th:href="@{/parkinglots}" class="btn btn-secondary">Quay lại</a>
+            <a th:href="@{/parkinglot/{lotId}/slots/add(lotId=${lotId})}" class="btn btn-success ms-2">Thêm slot</a>
+        </div>
+
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Ten slot</th>
+                    <th>Trạng thái</th>
+                    <th class="text-nowrap">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s, iterStat : ${slots}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td th:text="${s.slotCode}"></td>
+                    <td th:text="${s.status}"></td>
+                    <td>
+                        <button 
+                            type="button" 
+                            class="btn btn-sm btn-warning"
+                            data-bs-toggle="modal"
+                            data-bs-target="#updateSlotModal"
+                            th:attr="data-id=${s.slotId}, data-code=${s.slotCode}, data-status=${s.status}">
+                            Cập nhật
+                        </button>                        
+                        <button type="button" class="btn btn-sm btn-danger"
+                                th:onclick="|deleteSlot('/api/slot/delete/' + ${s.slotId})|">Xóa</button>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <div class="modal fade" id="updateSlotModal" tabindex="-1" aria-labelledby="slotModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="slotModalLabel">Cập nhật chỗ đậu xe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+
+                <form method="post" th:action="@{/plate/update/{id}(id=${p.id})}">
+                    <div class="modal-body">
+                        <input type="hidden" name="slotId" id="modalSlotId" />
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="slotCode" id="modalSlotCode" required />
+                            <label for="modalSlotCode">Mã chỗ đậu</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" name="status" id="modalSlotStatus" required>
+                                <option value="available">Trống</option>
+                                <option value="booked">Đã đặt</option>
+                                <option value="occupied">Đang sử dụng</option>
+                                <option value="maintenance">Bảo trì</option>
+                            </select>
+                            <label for="modalSlotStatus">Trạng thái</label>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script th:src="@{/js/main.js}" defer></script>
+
+    <footer th:replace="base::footer"></footer>
+</body>
+</html>

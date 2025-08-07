@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quản lý biển số xe</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <h1 class="text-center text-info mt-2">Quản lý biển số xe</h1>
+
+    <div class="container">
+        <!-- Nút mở modal -->
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPlateModal">
+            Thêm biển số xe
+        </button>
+
+    </div>
+
+    <main class="container mt-3">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Biển số</th>
+                    <th>Người sở hữu</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="plate, iterStat : ${plates}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td th:text="${plate.licensePlate}"></td>
+                    <td th:text="${plate.user.username}"></td>
+                    <td th:text="${#dates.format(plate.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updatePlateModal"
+                                th:attr="data-id=${plate.id}, data-license=${plate.licensePlate}">
+                            Cập nhật
+                        </button>
+
+                        <button type="button" class="btn btn-sm btn-danger"
+                                th:onclick="|deletePlate('/api/plate/delete/' + ${plate.id})|">Xóa</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <div class="modal fade" id="addPlateModal" tabindex="-1" aria-labelledby="addPlateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="addPlateForm" class="modal-content" th:action="@{/licenseplate/add}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPlateModalLabel">Thêm biển số xe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="licensePlateInput" class="form-label">Biển số xe</label>
+                        <input type="text" class="form-control" id="licensePlateInput" name="licensePlate" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="updatePlateModal" tabindex="-1" aria-labelledby="plateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="plateModalLabel">Cập nhật biển số xe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+
+                <form method="post" id="updatePlateForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="modalPlateId" />
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="licensePlate" id="modalLicensePlate" required />
+                            <label for="modalLicensePlate">Biển số xe</label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script th:src="@{/js/main.js}" defer></script>
+    <footer th:replace="base :: footer"></footer>
+</body>
+</html>
+

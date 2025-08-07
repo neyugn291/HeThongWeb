@@ -1,0 +1,58 @@
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quan ly Bai do xe</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <h1 class ="text-center text-info mt-2">Quan ly Bai do xe</h1>
+
+    <div class ="container">
+        <div class="mt-2 mb-2">
+            <a th:href="@{/parkinglot/add}" class="btn btn-success">Them bai do xe</a>
+        </div>
+    </div>
+
+    <main class="container mt-3">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Tên bãi đỗ</th>
+                    <th>Địa chỉ</th>
+                    <th class="text-nowrap">Sức chứa</th>
+                    <th>Ảnh</th>
+                    <th class="text-nowrap">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p, iterStat : ${parkingLots}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td th:text="${p.name}"></td>
+                    <td th:text="${p.address}"></td>
+                    <td th:text="${p.totalSlots}"></td>
+                    <td>
+                        <img th:src="${p.img}" alt="ảnh" style="height: 60px"/>
+                    </td>
+                    <td>
+                        <a th:href="@{/parkinglot/update/{lotId}(lotId=${p.lotId})}" class="btn btn-sm btn-warning">Cập nhật</a>
+                        <button type="button" class="btn btn-sm btn-danger"
+                                th:onclick="|deleteParkingLot('/api/parkinglot/delete/' + ${p.lotId})|">Xóa</button>
+                        <a th:href="@{/parkinglot/{lotId}/slots(lotId=${p.lotId})}" class="btn btn-sm btn-info">Slot</a>
+                        <a th:href="@{/parkinglot/{lotId}/reviews(lotId=${p.lotId})}" class="btn btn-sm btn-secondary">Review</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+
+    <script th:src="@{/js/main.js}" defer></script>
+
+
+
+
+    <footer th:replace="base::footer"></footer>
+</body>
+</html>

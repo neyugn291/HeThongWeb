@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quản lý Người dùng</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <h1 class="text-center text-info mt-2">Danh sách người dùng</h1>
+    <div class ="container">
+        <div class="mt-2 mb-2">
+            <a th:href="@{/register}" class="btn btn-success">Them user</a>
+        </div>
+    </div>
+
+    <main class="container mt-3">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Vai trò</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u, stat : ${users}">
+                    <td th:text="${stat.count}">1</td>
+                    <td th:text="${u.fullName}">Nguyễn Văn A</td>
+                    <td th:text="${u.email}">email@example.com</td>
+                    <td th:text="${u.username}">nguyenvana</td>
+                    <td th:text="${u.role}">USER</td>
+                    <td th:text="${#dates.format(u.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal"
+                                th:attr="data-bs-target=|#editUserModal__${u.userId}|">
+                            Cap nhat
+                        </button>
+                        <button class="btn btn-sm btn-danger"
+                                th:onclick="|deleteUser('/api/user/delete/' + ${u.userId})|">
+                            Xóa
+                        </button>
+                    </td>
+                    
+            <div class="modal fade" 
+                 th:id="|editUserModal__${u.userId}|" 
+                 tabindex="-1" 
+                 aria-labelledby="editUserModalLabel__${u.userId}" 
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/user/update/{id}(id=${u.userId})}" 
+                              method="post" 
+                              enctype="multipart/form-data">
+                            <div class="modal-header">
+                                <h5 class="modal-title" th:id="'editUserModalLabel__' + ${u.userId}">Chỉnh sửa người dùng</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="userId" th:value="${u.userId}" />
+
+                                <div class="mb-3">
+                                    <label class="form-label">Họ tên</label>
+                                    <input type="text" class="form-control" name="fullName" th:value="${u.fullName}" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" th:value="${u.email}" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tên đăng nhập</label>
+                                    <input type="text" class="form-control" name="username" th:value="${u.username}" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Vai trò</label>
+                                    <select class="form-select" name="role">
+                                        <option value="USER" th:selected="${u.role == 'USER'}">USER</option>
+                                        <option value="ADMIN" th:selected="${u.role == 'ADMIN'}">ADMIN</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ảnh đại diện</label>
+                                    <input type="file" name="avatar" class="form-control" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ảnh hiện tại</label><br/>
+                                    <img th:src="${u.avatar}" alt="avatar" width="100" height="100"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script th:src="@{/js/main.js}" defer></script>
+    <footer th:replace="base::footer"></footer>
+</body>
+</html>
+

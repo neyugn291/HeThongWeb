@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Home Page</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <main class="container mt-4">
+        <div class="row g-4" th:if="${parkingLots != null}">
+            <div class="col-md-4" th:each="p : ${parkingLots}">
+                <div class="card h-100 shadow-sm border-0">
+                    <img th:src="${p.img != null} ? ${p.img} : '@{/images/default.jpg}'"
+                         class="card-img-top rounded-top"
+                         alt="Ảnh bãi đỗ xe"
+                         style="height: 200px; object-fit: cover;">
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-2 fw-bold" th:text="${p.name}">Tên bãi xe</h5>
+
+                        <p class="card-text mb-3 text-muted small">
+                            <i class="bi bi-geo-alt-fill"></i> <span th:text="${p.address}">Địa chỉ</span><br>
+                            <i class="bi bi-currency-dollar"></i> Giá/giờ: <span th:text="${#numbers.formatDecimal(p.pricePerHour, 0, 'POINT', 0, 'COMMA')}"></span> VND<br>
+                            <i class="bi bi-grid-3x3-gap-fill"></i> Số chỗ: <span th:text="${p.totalSlots}"></span>
+                        </p>
+
+                        <div class="mt-auto">
+                            <a th:href="@{/parkinglot/{id}(id=${p.lotId})}" class="btn btn-outline-secondary btn-sm me-2">
+                                Xem chi tiết
+                            </a>
+
+                            <a th:href="@{/booking/add(lotId=${p.lotId})}" class="btn btn-primary btn-sm">Đặt chỗ</a>
+
+                            <button class="btn btn-success"
+                                    data-bs-toggle="modal"
+                                    th:attr="data-bs-target='#reviewModal__' +${p.lotId}">
+                                Đánh giá bãi đậu xe
+                            </button>
+
+                        </div>
+
+                        <div class="modal fade" 
+                             th:id="'reviewModal__' + ${p.lotId}" 
+                             tabindex="-1" 
+                             aria-labelledby="reviewModalLabel__${p.lotId}" 
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form th:action="@{/reviews/add}" method="post" th:object="${review}" onsubmit="disableSubmit(this)">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" th:id="'reviewModalLabel__' + ${p.lotId}">Viết đánh giá</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="lotId" th:value="${p.lotId}" />
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Đánh giá (1-5 sao)</label>
+                                                <input type="number" class="form-control" th:field="*{rating}" min="1" max="5" required />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Nhận xét</label>
+                                                <textarea class="form-control" th:field="*{comment}" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script th:src="@{/js/main.js}" defer></script>
+
+    <footer th:replace="base::footer"></footer>
+</body>
+</html>

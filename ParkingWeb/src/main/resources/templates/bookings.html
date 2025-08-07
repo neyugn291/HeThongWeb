@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quản lý Đặt chỗ</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <h1 class="text-center text-info mt-2">Danh sách đặt chỗ</h1>
+
+    <main class="container mt-3">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Người đặt</th>
+                    <th>Biển số xe</th>
+                    <th>Chỗ đỗ</th>
+                    <th>Bắt đầu</th>
+                    <th>Kết thúc</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="b, stat : ${bookings}">
+                    <td th:text="${stat.count}">1</td>
+                    <td th:text="${b.userId.fullName}">Nguyễn Văn A</td>
+                    <td th:text="${b.licensePlateId.licensePlate}">59A-123.45</td>
+                    <td th:text="${b.slotId.slotCode}">Chỗ A1</td>
+                    <td th:text="${#dates.format(b.startTime, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#dates.format(b.endTime, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${b.status}">PENDING</td>
+                    <td th:text="${#dates.format(b.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <!-- Nút cập nhật -->
+                        <button type="button"
+                                class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateBookingModal"
+                                th:attr="data-id=${b.bookingId}, data-status=${b.invoiceId.status}">
+                            Cập nhật
+                        </button>
+                        <button class="btn btn-sm btn-danger"
+                                th:onclick="|deleteBooking('/api/booking/delete/' + ${b.bookingId})|">
+                            Xóa
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="modal fade" id="updateBookingModal" tabindex="-1" aria-labelledby="updateBookingLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post" id="updateBookingForm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="updateBookingLabel">Cập nhật trạng thái đặt chỗ</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="modalBookingId" />
+
+                            <div class="form-floating mb-3">
+                                <select name="status" id="modalBookingStatus" class="form-select">
+                                    <option th:each="s : ${statuses}"
+                                            th:value="${s.name()}"
+                                            th:text="${s.name()}"></option>
+                                </select>
+                                <label for="modalBookingStatus">Trạng thái</label>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <script th:src="@{/js/main.js}" defer></script>
+        <footer th:replace="base::footer"></footer>
+</body>
+</html>
+

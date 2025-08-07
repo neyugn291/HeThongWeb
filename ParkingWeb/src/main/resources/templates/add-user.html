@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm người dùng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #ffffff);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            color: #00796b;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #004d40;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            background-color: #00796b;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #004d40;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Thêm người dùng</h2>
+
+    <form th:action="@{/register}" method="post" enctype="multipart/form-data">
+        <div>
+            <label>Username:</label>
+            <input type="text" name="username" required/>
+        </div>
+
+        <div>
+            <label>Email:</label>
+            <input type="email" name="email" required/>
+        </div>
+
+        <div>
+            <label>Full Name:</label>
+            <input type="text" name="fullName" required/>
+        </div>
+
+        <div>
+            <label>Phone:</label>
+            <input type="text" name="phone"/>
+        </div>
+
+        <div>
+            <label>Password:</label>
+            <input type="password" name="password" required/>
+        </div>
+
+        <div>
+            <label>Avatar:</label>
+            <input type="file" name="avatar" accept="image/*"/>
+        </div>
+
+        <div>
+            <button type="submit">Thêm</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

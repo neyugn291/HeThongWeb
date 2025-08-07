@@ -1,0 +1,75 @@
+
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Them Bai do xe</title>
+    <th:context th:replace="base :: resourses"></th:context>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <h1 class ="text-center text-info mt-2">Them Bai do xe</h1>
+
+    <div class ="container">
+        <form th:action="@{/parkinglot/add}"
+              th:object="${parkingLot}" method="post" enctype="multipart/form-data">
+
+
+            <div class="form-floating mb-3 mt-3">
+                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Tên bãi đỗ xe" required>
+                <label for="name">Tên bãi đỗ xe</label>
+            </div>
+
+            <!-- Address -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="address" th:field="*{address}" placeholder="Địa chỉ" required>
+                <label for="address">Địa chỉ</label>
+            </div>
+
+            <!-- Total Slots -->
+            <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="totalSlots" th:field="*{totalSlots}" placeholder="Tổng số chỗ" required>
+                <label for="totalSlots">Tổng số chỗ</label>
+            </div>
+
+            <!-- Price Per Hour -->
+            <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="pricePerHour" th:field="*{pricePerHour}" placeholder="Giá mỗi giờ" required>
+                <label for="pricePerHour">Giá mỗi giờ (VNĐ)</label>
+            </div>
+
+            <!-- Amenities -->
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="amenities" th:field="*{amenities}" placeholder="Tiện ích"></textarea>
+                <label for="amenities">Tiện ích</label>
+            </div>
+
+            <!-- Description -->
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="description" th:field="*{description}" placeholder="Mô tả"></textarea>
+                <label for="description">Mô tả</label>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mb-3">
+                <label for="img" class="form-label">Tải ảnh lên:</label>
+                <input type="file" class="form-control" id="img" th:field="*{file}">
+            </div>
+            
+            <div class="form-floating mb-3 mt-3" th:if="${parkingLot.img != null}">
+                <img th:src="${parkingLot.img}" width="300"/>
+            </div>
+
+            <!-- Submit -->
+            <input type="hidden" th:field="*{lotId}"/>
+            <input type="hidden" th:field="*{img}"/>
+
+            <button type="submit" class="btn btn-success">
+                <span th:if="${parkingLot.lotId == null}">Thêm bãi đỗ</span>
+                <span th:if="${parkingLot.lotId != null}">Cập nhật bãi đỗ</span>
+            </button>
+        </form>
+    </div>
+
+    <footer th:replace="base::footer"></footer>
+</body>
+</html>
