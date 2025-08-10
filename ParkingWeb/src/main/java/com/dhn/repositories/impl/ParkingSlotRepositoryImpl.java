@@ -9,6 +9,7 @@ import com.dhn.repositories.ParkingSlotRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import org.hibernate.Session;
@@ -58,7 +59,15 @@ public class ParkingSlotRepositoryImpl implements ParkingSlotRepository {
     @Override
     public ParkingSlot getParkingSlotById(int slotId) {
         Session s = this.factory.getObject().getCurrentSession();
-        return s.get(ParkingSlot.class, slotId);
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<ParkingSlot> cq = cb.createQuery(ParkingSlot.class);
+        Root<ParkingSlot> root = cq.from(ParkingSlot.class);
+
+        root.fetch("lotId", JoinType.INNER);
+
+        cq.select(root).where(cb.equal(root.get("slotId"), slotId));
+
+        return s.createQuery(cq).uniqueResult();
     }
 
     @Override

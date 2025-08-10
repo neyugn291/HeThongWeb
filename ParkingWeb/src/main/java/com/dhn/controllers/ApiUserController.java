@@ -9,10 +9,13 @@ import com.dhn.pojo.Notification;
 import com.dhn.pojo.User;
 import com.dhn.services.LicensePlateService;
 import com.dhn.services.NotificationService;
+import com.dhn.services.StatsService;
 import com.dhn.services.UserService;
 import com.dhn.utils.JwtUtils;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +93,7 @@ public class ApiUserController {
         }
         this.userService.deleteUser(userId);
     }
-    
+
     @PostMapping("/secure/plate/add")
     public ResponseEntity<?> addPlate(@RequestBody LicensePlate licensePlate, Principal principal) {
         String username = principal.getName();
@@ -100,19 +103,43 @@ public class ApiUserController {
         this.plateService.addPlate(licensePlate);
         return ResponseEntity.status(HttpStatus.CREATED).body(licensePlate);
     }
-    
+
     @DeleteMapping("/plate/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLicensePlate(@PathVariable(value = "id") int id) {
         this.plateService.deletePlate(id);
     }
-    
+
     @Autowired
     NotificationService notiService;
-    
+
     @GetMapping("/secure/notifications")
     public ResponseEntity<List<Notification>> getUserNotis(Principal user) {
         User u = this.userService.getUserByUsername(user.getName());
         return new ResponseEntity<>(this.notiService.getNotisByUsername(u.getUsername()), HttpStatus.OK);
+    }
+
+    @Autowired
+    private StatsService statsService;
+    @GetMapping("/stats")
+    public Map<String, Object> getStats(
+            @RequestParam(name = "day", required = false) Integer day,
+            @RequestParam(name = "month", required = false) Integer month,
+            @RequestParam(name = "year", required = false) Integer year
+    ) {
+        LocalDate today = LocalDate.now();
+        int d = (day != null) ? day : today.getDayOfMonth();
+        int m = (month != null) ? month : today.getMonthValue();
+        int y = (year != null) ? year : today.getYear();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("stats", statsService.statsRevenueByParkingLot());
+        result.put("timeStats", statsService.statsRevenueByTime(d, m, y));
+        result.put("topUsers", statsService.statsTopCustomersByRevenue(5));
+        result.put("day", d);
+        result.put("month", m);
+        result.put("year", y);
+
+        return result;
     }
 }

@@ -4,26 +4,20 @@
  */
 package com.dhn.controllers;
 
-import com.dhn.enums.BookingStatus;
 import com.dhn.enums.InvoiceStatus;
 import com.dhn.enums.PaymentMethod;
 import com.dhn.pojo.Booking;
-import com.dhn.pojo.Payment;
 import com.dhn.pojo.User;
 import com.dhn.repositories.PaymentRepository;
 import com.dhn.services.BookingService;
-import com.dhn.services.PaymentService;
 import com.dhn.services.UserService;
-import com.dhn.utils.PdfGenerator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,9 +64,12 @@ public class ApiBookingController {
     public ResponseEntity<?> createBooking(@RequestBody Booking b, Principal user) {
         User u = this.userService.getUserByUsername(user.getName());
         b.setUserId(u);
-        bookingService.addBooking(b);
-        return ResponseEntity.ok("Đặt chỗ và tạo hóa đơn thành công!");
-
+        try {
+            this.bookingService.addBooking(b);
+            return ResponseEntity.ok("Đặt chỗ và tạo hóa đơn thành công!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/booking/delete/{id}")
@@ -114,14 +110,10 @@ public class ApiBookingController {
                     || !booking.getInvoiceId().getStatus().equals(InvoiceStatus.PAID)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-
-            // Đọc file PDF từ đường dẫn đã lưu trong receiptUrl
             Path path = Paths.get(booking.getPayment().getReceiptUrl());
-
             if (!Files.exists(path)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // file không tồn tại
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-
             byte[] pdfBytes = Files.readAllBytes(path);
 
             HttpHeaders headers = new HttpHeaders();
@@ -154,12 +146,11 @@ public class ApiBookingController {
         if (b.getInvoiceId() != null && b.getInvoiceId().getStatus() == InvoiceStatus.PAID) {
             System.out.println("1");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể huỷ đặt chỗ đã thanh toán.");
-            
+
         }
         bookingService.deleteBooking(bookingId);
 
         return ResponseEntity.noContent().build();
     }
-    
 
 }

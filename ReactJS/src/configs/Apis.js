@@ -23,7 +23,8 @@ export const endpoints = {
     'payBooking': '/pay',
     'pdf':'/booking/pdf',
     'notifications':'/secure/notifications',
-    'delete-booking':'secure/booking/delete',
+    'delete-booking':'/secure/booking/delete',
+    'stats':'/stats',
 }
 
 export const authApis = () => axios.create({

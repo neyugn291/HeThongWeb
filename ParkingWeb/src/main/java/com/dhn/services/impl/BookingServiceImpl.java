@@ -73,8 +73,19 @@ public class BookingServiceImpl implements BookingService {
         ParkingSlot slot = this.parkingSlotRepo.getParkingSlotById(b.getSlotId().getSlotId());
         slot.setStatus(SlotStatus.BOOKED);
         this.parkingSlotRepo.updateParkingSlot(slot);
+        
+        
         LicensePlate lp = plateRepo.getPlateById(b.getLicensePlateId().getId());
         b.setLicensePlateId(lp);
+        
+        
+        int plateId = b.getLicensePlateId().getId();
+        Date start = b.getStartTime();
+        Date end = b.getEndTime();
+
+        if (bookingRepo.existsOverlappingBooking(plateId, start, end)) {
+            throw new IllegalArgumentException("Biển số xe này đã có lịch đặt trong khoảng thời gian bạn chọn.");
+        }
 
         this.bookingRepo.addBooking(b);
 
@@ -86,10 +97,10 @@ public class BookingServiceImpl implements BookingService {
         invoice.setInvoiceDate(new Date());
         invoice.setStatus(InvoiceStatus.UNPAID);
         invoice.setTotalAmount(Constants.calculateTotalAmount(b, p.getPricePerHour()));
-
         b.getPayment().setBookingId(b);
         b.getPayment().setAmount(Constants.calculateTotalAmount(b, p.getPricePerHour()));
-
+        
+        b = this.bookingRepo.getBookingById(b.getBookingId());
         this.invoiceRepo.addInvoice(invoice);
 
         try {
@@ -99,7 +110,7 @@ public class BookingServiceImpl implements BookingService {
             b.getPayment().setReceiptUrl(filePath);
             this.paymentRepo.updatePayment(b.getPayment());
         } catch (Exception e) {
-            e.printStackTrace(); // Bạn nên log lỗi thật cẩn thận ở đây
+            e.printStackTrace();
         }
     }
 
@@ -162,9 +173,8 @@ public class BookingServiceImpl implements BookingService {
         condition = Constants.CONDITIONS.get("EndTime");
 
         for (Booking b : endingBookings) {
-        ParkingSlot slot = b.getSlotId();
+            ParkingSlot slot = b.getSlotId();
 
-     
             if (!b.isSlotEnded() && slot != null && slot.getStatus() == SlotStatus.OCCUPIED) {
                 slot.setStatus(SlotStatus.AVAILABLE);
                 parkingSlotService.updateParkingSlot(slot, condition);
@@ -179,7 +189,7 @@ public class BookingServiceImpl implements BookingService {
                 );
                 System.out.println("Đã gửi thông báo kết thúc: bookingId = " + b.getBookingId());
             }
-    }
+        }
 
     }
 
@@ -198,14 +208,31 @@ public class BookingServiceImpl implements BookingService {
                 b.getSlotId().setStatus(SlotStatus.AVAILABLE);
                 b.setStatus(BookingStatus.CANCELLED);
                 this.bookingRepo.updateBooking(b);
-                
+
                 notificationService.notify(
                         b.getUserId(),
                         "Đặt chỗ của bạn đã bị huỷ do chưa thanh toán trước giờ bắt đầu."
                 );
                 System.out.println("Đã huỷ booking quá hạn chưa thanh toán: " + b.getBookingId());
-                
+
             }
+        }
+    }
+
+    @Override
+    public void cancelByAdmin(Booking b) {
+        if (b.getStatus() != BookingStatus.ACTIVE) {
+            throw new IllegalStateException("Booking không ở trạng thái có thể huỷ.");
+        }
+        if (b.getInvoiceId() != null) {
+            b.getSlotId().setStatus(SlotStatus.AVAILABLE);
+            b.setStatus(BookingStatus.CANCELLED);
+            this.bookingRepo.updateBooking(b);
+
+            notificationService.notify(
+                    b.getUserId(),
+                    "Đặt chỗ của bạn đã bị huỷ do admin."
+            );
         }
     }
 

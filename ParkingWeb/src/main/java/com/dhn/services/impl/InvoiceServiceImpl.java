@@ -4,7 +4,9 @@
  */
 package com.dhn.services.impl;
 
+import com.dhn.pojo.Booking;
 import com.dhn.pojo.Invoice;
+import com.dhn.repositories.BookingRepository;
 import com.dhn.repositories.InvoiceRepository;
 import com.dhn.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 
     @Autowired
     private InvoiceRepository invoiceRepository;
+    
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @Override
     public Invoice addInvoice(Invoice invoice) {

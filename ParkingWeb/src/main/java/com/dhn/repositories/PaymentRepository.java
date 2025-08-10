@@ -4,6 +4,7 @@
  */
 package com.dhn.repositories;
 
+import com.dhn.pojo.Invoice;
 import com.dhn.pojo.Payment;
 
 /**
@@ -11,6 +12,7 @@ import com.dhn.pojo.Payment;
  * @author dhngu
  */
 public interface PaymentRepository {
+    Payment getPaymentById(int id);
     public void addPayment(Payment p);
     public void updatePayment(Payment p);
 }

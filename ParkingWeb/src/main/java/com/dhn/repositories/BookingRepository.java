@@ -5,6 +5,7 @@
 package com.dhn.repositories;
 
 import com.dhn.pojo.Booking;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,4 +19,5 @@ public interface BookingRepository {
     void addBooking(Booking b);
     public void updateBooking(Booking b);
     void deleteBooking(int bookingId);
+    boolean existsOverlappingBooking(int licensePlateId, Date startTime, Date endTime);
 }

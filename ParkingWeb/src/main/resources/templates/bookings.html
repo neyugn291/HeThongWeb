@@ -47,6 +47,9 @@
                                 th:onclick="|deleteBooking('/api/booking/delete/' + ${b.bookingId})|">
                             Xóa
                         </button>
+                        <a th:href="@{booking/{bookingId}/payment-info(bookingId=${b.bookingId})}" class="btn btn-sm btn-info">
+                            Payment
+                        </a>
                     </td>
                 </tr>
             </tbody>

@@ -31,6 +31,7 @@ const Header = () => {
               <Link to="/register" className="nav-link">Register</Link>
             </> : <>
               <Link to="/myplates" className="nav-link">My Plates</Link>
+              <Link to="/stats" className="nav-link">Stats</Link>
               <Link to="/notifications" className="nav-link">
                 <FaBell size={20} title="Thông báo" />
               </Link>

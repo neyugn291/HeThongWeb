@@ -105,7 +105,13 @@ public class ParkingLotRepositoryImpl implements ParkingLotRepository {
     @Override
     public ParkingLot getParkingLotById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        return s.get(ParkingLot.class, id);
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<ParkingLot> cq = cb.createQuery(ParkingLot.class);
+        Root<ParkingLot> root = cq.from(ParkingLot.class);
+
+        cq.select(root).where(cb.equal(root.get("lotId"), id));
+
+        return s.createQuery(cq).uniqueResult();
     }
 
     @Override

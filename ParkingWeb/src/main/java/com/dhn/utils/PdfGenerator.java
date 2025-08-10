@@ -30,11 +30,11 @@ public class PdfGenerator {
 
         Files.createDirectories(Paths.get(outputDir));
 
-        // Tên file PDF
+ 
         String fileName = "invoice-" + booking.getBookingId() + ".pdf";
         String filePath = outputDir + "/" + fileName;
 
-        // Ghi ra file
+      
         PdfWriter writer = new PdfWriter(new FileOutputStream(filePath));
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
@@ -43,7 +43,7 @@ public class PdfGenerator {
         document.add(new Paragraph("Mã đơn: " + booking.getBookingId()).setFont(font));
         document.add(new Paragraph("Khách hàng: " + booking.getUserId().getFullName()).setFont(font));
         document.add(new Paragraph("Bãi đỗ xe: " + booking.getSlotId().getLotId().getName()).setFont(font));
-        document.add(new Paragraph("Phòng: " + booking.getSlotId().getSlotCode()).setFont(font));
+        document.add(new Paragraph("Chỗ đỗ xe: " + booking.getSlotId().getSlotCode()).setFont(font));
         document.add(new Paragraph("Ngày đặt: " + booking.getStartTime().toString()).setFont(font));
         document.add(new Paragraph("Biển số xe: " + booking.getLicensePlateId().getLicensePlate()).setFont(font));
         document.add(new Paragraph("Tổng tiền: " + booking.getPayment().getAmount() + " VND").setFont(font));

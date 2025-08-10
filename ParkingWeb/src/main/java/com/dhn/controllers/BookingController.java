@@ -7,13 +7,17 @@ package com.dhn.controllers;
 import com.dhn.enums.BookingStatus;
 import com.dhn.enums.PaymentMethod;
 import com.dhn.pojo.Booking;
+import com.dhn.pojo.Invoice;
 import com.dhn.pojo.LicensePlate;
 import com.dhn.pojo.ParkingLot;
 import com.dhn.pojo.ParkingSlot;
 import com.dhn.pojo.Payment;
 import com.dhn.pojo.User;
 import com.dhn.repositories.BookingRepository;
+import com.dhn.repositories.InvoiceRepository;
+import com.dhn.repositories.PaymentRepository;
 import com.dhn.services.BookingService;
+import com.dhn.services.InvoiceService;
 import com.dhn.services.LicensePlateService;
 import com.dhn.services.ParkingLotService;
 import com.dhn.services.ParkingSlotService;
@@ -100,9 +104,35 @@ public class BookingController {
     public String updateBookingStatus(@PathVariable("id") int id,
             @RequestParam("status") BookingStatus status) {
         Booking b = bookingService.getBookingById(id);
-        b.setStatus(status);
-        this.bookingRepo.updateBooking(b);
+        if(status == BookingStatus.CANCELLED)
+            this.bookingService.cancelByAdmin(b);
+        else {
+            b.setStatus(status);
+            this.bookingRepo.updateBooking(b);
+        }
         return "redirect:/bookings";
+    }
+    
+
+    
+    @Autowired
+    private InvoiceRepository invoiceRepo;
+    
+    @Autowired
+    private PaymentRepository paymentRepo;
+    
+    @GetMapping("booking/{bookingId}/payment-info")
+    public String getPaymentInfo(@PathVariable(value = "bookingId") int bookingId, Model model) {
+        
+        Booking b = this.bookingRepo.getBookingById(bookingId);
+        Invoice invoice = this.invoiceRepo.getInvoiceById(b.getInvoiceId().getInvoiceId());
+
+        Payment payment = this.paymentRepo.getPaymentById(b.getPayment().getPaymentId());
+
+        model.addAttribute("invoiceStatus", invoice != null ? invoice.getStatus() : "Không tìm thấy");
+        model.addAttribute("totalAmount", invoice != null ? invoice.getTotalAmount() : 0);
+        model.addAttribute("paymentMethod", payment.getPaymentMethod());
+        return "payment-info";
     }
 
 }

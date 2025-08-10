@@ -21,7 +21,7 @@ const ParkingLotDetails = () => {
         const loadDetails = async () => {
             try {
                 setLoading(true);
-                let res = await Apis.get(`${endpoints['parkinglot']}/${lotId}`);
+                let res = await Apis.get(`endpoints['parkinglot']}/${lotId}`);
                 setParkingLot(res.data);
             } catch (err) {
                 console.error(err);

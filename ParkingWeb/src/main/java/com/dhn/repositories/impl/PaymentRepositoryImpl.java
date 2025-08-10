@@ -4,8 +4,12 @@
  */
 package com.dhn.repositories.impl;
 
+import com.dhn.pojo.Booking;
 import com.dhn.pojo.Payment;
 import com.dhn.repositories.PaymentRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -21,6 +25,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentRepositoryImpl implements PaymentRepository{
     @Autowired
     private LocalSessionFactoryBean factory;
+    
+    @Override
+    public Payment getPaymentById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
+        Root<Payment> root = cq.from(Payment.class);
+
+        cq.select(root).where(cb.equal(root.get("paymentId"), id));
+
+        return s.createQuery(cq).uniqueResult();
+    }
     
     @Override
     public void addPayment(Payment p) {

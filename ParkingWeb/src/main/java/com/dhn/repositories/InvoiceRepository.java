@@ -11,6 +11,7 @@ import com.dhn.pojo.Invoice;
  * @author dhngu
  */
 public interface InvoiceRepository {
+    Invoice getInvoiceById(int id);
 
     Invoice addInvoice(Invoice invoice);
     

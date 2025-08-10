@@ -4,8 +4,12 @@
  */
 package com.dhn.repositories.impl;
 
+import com.dhn.pojo.Booking;
 import com.dhn.pojo.Invoice;
 import com.dhn.repositories.InvoiceRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -22,6 +26,18 @@ public class InvoiceRepositoryImpl implements InvoiceRepository{
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    
+    @Override
+    public Invoice getInvoiceById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<Invoice> cq = cb.createQuery(Invoice.class);
+        Root<Invoice> root = cq.from(Invoice.class);
+
+        cq.select(root).where(cb.equal(root.get("invoiceId"), id));
+
+        return s.createQuery(cq).uniqueResult();
+    }
 
     @Override
     public Invoice addInvoice(Invoice invoice) {

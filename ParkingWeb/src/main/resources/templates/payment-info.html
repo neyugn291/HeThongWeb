@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Thông tin thanh toán</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #e3f2fd, #ffffff);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 480px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        h1 {
+            color: #1565c0;
+            margin-bottom: 24px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #0d47a1;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        .info-value {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #424242;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 20px;
+            background-color: #1565c0;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .back-link:hover {
+            background-color: #0d3570;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <div class="container" th:if="${invoiceStatus != null}">
+        <h1>Thông tin thanh toán</h1>
+
+        <div>
+            <div class="info-label">Trạng thái hóa đơn:</div>
+            <div class="info-value" th:text="${invoiceStatus}">--</div>
+        </div>
+
+        <div>
+            <div class="info-label">Tổng số tiền:</div>
+            <div class="info-value" th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'">0 VNĐ</div>
+        </div>
+
+        <div>
+            <div class="info-label">Phương thức thanh toán:</div>
+            <div class="info-value" th:text="${paymentMethod != null ? paymentMethod : 'Chưa có'}">Chưa có</div>
+        </div>
+
+        <a class="back-link" th:href="@{/booking/list}">← Quay lại danh sách đặt chỗ</a>
+    </div>
+
+    <div class="container" th:if="${invoiceStatus == null}">
+        <h1>Không tìm thấy thông tin thanh toán</h1>
+        <a class="back-link" th:href="@{/bookings}">← Quay lại danh sách đặt chỗ</a>
+    </div>
+</body>
+</html>

@@ -128,8 +128,14 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public Booking getBookingById(int id) {
-        Session session = this.factory.getObject().getCurrentSession();
-        return session.get(Booking.class, id);
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<Booking> cq = cb.createQuery(Booking.class);
+        Root<Booking> root = cq.from(Booking.class);
+
+        cq.select(root).where(cb.equal(root.get("bookingId"), id));
+
+        return s.createQuery(cq).uniqueResult();
     }
 
     @Override
@@ -143,10 +149,10 @@ public class BookingRepositoryImpl implements BookingRepository {
         } catch (JsonProcessingException ex) {
             System.getLogger(BookingRepositoryImpl.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-        
+
         session.save(b);
     }
-    
+
     @Override
     public void updateBooking(Booking b) {
         Session s = this.factory.getObject().getCurrentSession();
@@ -161,4 +167,28 @@ public class BookingRepositoryImpl implements BookingRepository {
             session.delete(b);
         }
     }
+
+    @Override
+    public boolean existsOverlappingBooking(int licensePlateId, Date startTime, Date endTime) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Booking> root = cq.from(Booking.class);
+
+        Predicate plateMatch = cb.equal(root.get("licensePlateId").get("id"), licensePlateId);
+
+        Predicate timeOverlap = cb.and(
+                cb.lessThan(root.get("startTime"), endTime),
+                cb.greaterThan(root.get("endTime"), startTime)
+        );
+
+        Predicate statusNotCancelled = cb.notEqual(root.get("status"), BookingStatus.CANCELLED);
+
+        cq.select(cb.count(root)).where(cb.and(plateMatch, timeOverlap, statusNotCancelled));
+
+        Long count = s.createQuery(cq).getSingleResult();
+
+        return count > 0;
+    }
+
 }

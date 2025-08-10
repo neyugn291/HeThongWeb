@@ -18,4 +18,5 @@ public interface BookingService {
     void addBooking(Booking b);
     void deleteBooking(int bookingId);
     public void payBooking(Booking b);
+    public void cancelByAdmin(Booking b);
 }

@@ -44,7 +44,13 @@ public class LicensePlateRepositoryImpl implements LicensePlateRepository {
     @Override
     public LicensePlate getPlateById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        return s.get(LicensePlate.class, id);
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<LicensePlate> cq = cb.createQuery(LicensePlate.class);
+        Root<LicensePlate> root = cq.from(LicensePlate.class);
+
+        cq.select(root).where(cb.equal(root.get("id"), id));
+
+        return s.createQuery(cq).uniqueResult();
     }
 
     @Override
